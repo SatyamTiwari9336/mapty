@@ -37,3 +37,27 @@ if (navigator.geolocation) {
 }
 
 // console.log(firstName);
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  inputDuration.value =
+    inputCadence.value =
+    inputDistance.value =
+    inputElevation.value =
+      "";
+  console.log(mapEvent);
+  const { lat, lng } = mapEvent.latlng;
+
+  L.marker([lat, lng])
+    .addTo(map)
+    .bindPopup(
+      L.popup({
+        maxWidth: 250,
+        minWidth: 50,
+        autoClose: false,
+        closeOnClick: false,
+        className: "running-popup",
+      })
+    )
+    .setPopupContent("workout")
+    .openPopup();
+});
