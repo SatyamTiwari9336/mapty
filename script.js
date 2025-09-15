@@ -50,10 +50,10 @@ class App {
     inputDistance.focus();
   }
   _toggleElevationField() {
-    inputElevation.closest("form__row").classList.toggle("form__row--hidden");
-    inputCadence.closest("form__row").classList.toggle("form__row--hidden");
+    inputCadence.closest(".form__row").classList.toggle("form__row--hidden");
+    inputElevation.closest(".form__row").classList.toggle("form__row--hidden");
   }
-  _newWorkout() {
+  _newWorkout(e) {
     e.preventDefault();
 
     inputDuration.value =
@@ -62,7 +62,7 @@ class App {
       inputElevation.value =
         "";
 
-    console.log(mapEvent);
+    console.log(this.#mapEvent);
     const { lat, lng } = this.#mapEvent.latlng;
     L.marker([lat, lng])
       .addTo(this.#map)
@@ -80,5 +80,5 @@ class App {
   }
 }
 const app = new App();
-app._getPosition();
+// app._getPosition();
 // console.log(firstName);
