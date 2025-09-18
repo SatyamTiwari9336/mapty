@@ -41,11 +41,14 @@ class Workout {
 
 class Running extends Workout {
   type = "running";
+
   constructor(coords, distance, duration, cadence) {
     super(coords, distance, duration);
     this.cadence = cadence;
     this.calcPace();
+    this._setDescription();
   }
+
   calcPace() {
     this.pace = this.duration / this.distance;
     return this.pace;
@@ -57,6 +60,7 @@ class Cycling extends Workout {
     super(coords, distance, duration);
     this.elevation = elevation;
     this.calcSpeed();
+    this._setDescription();
   }
   calcSpeed() {
     this.speed = this.distance / this.duration;
@@ -101,6 +105,17 @@ class App {
     this.#mapEvent = mapE;
     form.classList.remove("hidden");
     inputDistance.focus();
+  }
+  _hideForm() {
+    //empty inputs
+    inputDuration.value =
+      inputCadence.value =
+      inputDistance.value =
+      inputElevation.value =
+        "";
+    form.style.display = "none";
+    form.classList.add("hidden");
+    setTimeout(() => (form.style.display = "grid"), 1000);
   }
   _toggleElevationField() {
     inputCadence.closest(".form__row").classList.toggle("form__row--hidden");
@@ -158,12 +173,7 @@ class App {
     //Render workout on list .
     this._renderWorkout(workout);
     //Hide form + clear input fields
-
-    inputDuration.value =
-      inputCadence.value =
-      inputDistance.value =
-      inputElevation.value =
-        "";
+    this._hideForm();
   }
   _renderWorkoutMarker(workout) {
     L.marker(workout.coords)
