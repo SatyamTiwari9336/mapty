@@ -261,12 +261,14 @@ class App {
         duration: 1,
       },
     });
+    //using public interface
+    workout.click();
   }
 }
 const app = new App();
 // app._getPosition();
 // console.log(firstName);
-// const run1 = new Running([31, 32], 23, 50, 12);
-// const cycle2 = new Cycling([33, 34], 55, 120, 532);
-// console.log(run1);
-// console.log(cycle2);
+const run1 = new Running([31, 32], 23, 50, 12);
+const cycle2 = new Cycling([33, 34], 55, 120, 532);
+console.log(run1);
+console.log(cycle2);
