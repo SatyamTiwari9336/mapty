@@ -13,6 +13,7 @@ const inputElevation = document.querySelector(".form__input--elevation");
 class Workout {
   date = new Date();
   id = (Date.now() + "").slice(-10);
+  clicks = 0;
   constructor(coords, distance, duration) {
     this.coords = coords; //[lat,lng]
     this.distance = distance; //in km
@@ -36,6 +37,9 @@ class Workout {
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
       months[this.date.getMonth()]
     } ${this.date.getDate()}`;
+  }
+  click() {
+    this.clicks++;
   }
 }
 
@@ -70,12 +74,14 @@ class Cycling extends Workout {
 class App {
   #map;
   #mapEvent;
+  #mapzoomlevel = 11;
   #workouts = [];
   constructor() {
     this._getPosition();
 
     form.addEventListener("submit", this._newWorkout.bind(this));
     inputType.addEventListener("change", this._toggleElevationField);
+    containerWorkouts.addEventListener("click", this._moveToPopup.bind(this));
   }
   _getPosition() {
     if (navigator.geolocation)
@@ -94,7 +100,7 @@ class App {
     const coords = [latitude, longitude];
     console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
 
-    this.#map = L.map("map").setView(coords, 13); //to zoom in and out change 13
+    this.#map = L.map("map").setView(coords, this.#mapzoomlevel); //to zoom in and out change 13
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -187,12 +193,14 @@ class App {
           className: `${workout.type}-popup`,
         })
       )
-      .setPopupContent(`"${workout.type}"`)
+      .setPopupContent(
+        `${workout.type === "running" ? "🏃‍♂️" : "🚴"} ${workout.description}`
+      )
       .openPopup();
   }
   _renderWorkout(workout) {
     let html = `
-    <li class="workout workout--${workout.type}" data-id="1234567890">
+    <li class="workout workout--${workout.type}" data-id=${workout.id}>
           <h2 class="workout__title">${workout.description}</h2>
           <div class="workout__details">
             <span class="workout__icon">${
@@ -230,18 +238,35 @@ class App {
           </div>
           <div class="workout__details">
             <span class="workout__icon">⛰</span>
-            <span class="workout__value">${workout.elevationGain}</span>
+            <span class="workout__value">${workout.elevation}</span>
             <span class="workout__unit">m</span>
           </div>
         </li>`;
     }
     form.insertAdjacentHTML("afterend", html);
   }
+  _moveToPopup(e) {
+    const workoutEl = e.target.closest(".workout");
+    console.log(workoutEl);
+    if (!workoutEl) {
+      return;
+    }
+    const workout = this.#workouts.find(
+      (work) => work.id === workoutEl.dataset.id
+    );
+    console.log(workout);
+    this.#map.setView(workout.coords, this.#mapzoomlevel, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
+  }
 }
 const app = new App();
 // app._getPosition();
 // console.log(firstName);
-const run1 = new Running([31, 32], 23, 50, 12);
-const cycle2 = new Cycling([33, 34], 55, 120, 532);
-console.log(run1);
-console.log(cycle2);
+// const run1 = new Running([31, 32], 23, 50, 12);
+// const cycle2 = new Cycling([33, 34], 55, 120, 532);
+// console.log(run1);
+// console.log(cycle2);
